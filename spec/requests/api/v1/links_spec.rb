@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::LinksController, type: :request do
+  describe 'GET /links' do
+
+  end
+
   describe 'CREATE /links' do
     let(:long_url) { 'https://long.url.com/shorten/me?something=1&anotherParam=42' }
 
@@ -63,6 +67,22 @@ RSpec.describe Api::V1::LinksController, type: :request do
       end
     end
 
+    context 'when a duplicate slug is provided' do
+      let(:params) do
+        { link: { slug: 'some-slug', url: long_url } }
+      end
+
+      before do
+        Link.create!(slug: 'some-slug', url: 'http://someother.url.com/')
+        post api_v1_links_path, params: params, as: :json
+      end
+
+      it 'responds with a bad_request' do
+        expect(response).to have_http_status(:bad_request)
+        expect(json_response[:errors]).to include('Slug has already been taken')
+      end
+    end
+
     context 'when no url is provided' do
       let(:params) do
         { link: { url: '' } }
@@ -75,6 +95,22 @@ RSpec.describe Api::V1::LinksController, type: :request do
       it 'responds with a bad_request' do
         expect(response).to have_http_status(:bad_request)
         expect(json_response[:errors]).to include("Url can't be blank")
+      end
+    end
+
+    context 'when a duplicate url is provided' do
+      let(:params) do
+        { link: { url: long_url } }
+      end
+
+      before do
+        Link.create(url: long_url)
+        post api_v1_links_path, params: params, as: :json
+      end
+
+      it 'responds with a bad_request' do
+        expect(response).to have_http_status(:bad_request)
+        expect(json_response[:errors]).to include('Url has already been taken')
       end
     end
   end
