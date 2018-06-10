@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: db
+  username: postgres
+  password:
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: rails5-docker-boilerplate_development
+
+test:
+  <<: *default
+  database: rails5-docker-boilerplate_test
+
+production:
+  <<: *default
+  database: rails5-docker-boilerplate_production
+  username: rails5-docker-boilerplate
+  password: <%= ENV['RAILS5-DOCKER-BOILERPLATE_DATABASE_PASSWORD'] %>
