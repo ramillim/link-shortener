@@ -8,14 +8,14 @@ default: &default
 
 development:
   <<: *default
-  database: rails5-docker-boilerplate_development
+  database: link-shortener_development
 
 test:
   <<: *default
-  database: rails5-docker-boilerplate_test
+  database: link-shortener_test
 
 production:
   <<: *default
-  database: rails5-docker-boilerplate_production
-  username: rails5-docker-boilerplate
+  database: link-shortener_production
+  username: link-shortener
   password: <%= ENV['RAILS5-DOCKER-BOILERPLATE_DATABASE_PASSWORD'] %>
