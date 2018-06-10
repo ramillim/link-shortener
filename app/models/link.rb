@@ -17,6 +17,6 @@ class Link < ApplicationRecord
 
   def slug_is_url_safe
     return true if CHARACTERS_ALLOWED_IN_SLUG.match?(slug)
-    errors.add(:slug, 'Custom slug can only include letters, numbers, `-`, and `_`')
+    errors.add(:slug, 'can only include letters, numbers, `-`, and `_`')
   end
 end
