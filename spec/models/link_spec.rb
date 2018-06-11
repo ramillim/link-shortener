@@ -22,7 +22,7 @@ RSpec.describe Link do
           short_link.slug = 'this/is/unsafe'
           short_link.save
           expect(short_link.errors[:slug])
-            .to include('Custom slug can only include letters, numbers, `-`, and `_`')
+            .to include('can only include letters, numbers, `-`, and `_`')
         end
 
         it 'allows hyphens' do
@@ -71,6 +71,42 @@ RSpec.describe Link do
         expect(link.slug).to eq('custom-slug')
         expect(link.url).to eq(long_url)
       end
+    end
+  end
+
+  describe '#record_visit' do
+    let(:link) { described_class.create!(url: long_url) }
+
+    it 'creates an associated LinkVisit' do
+      expect { link.record_visit }.to change(link.link_visits, :count).by(1)
+    end
+  end
+
+  describe '#visits_total' do
+    let(:link) { described_class.create!(url: long_url) }
+
+    before do
+      2.times { link.record_visit }
+    end
+
+    it 'calculates the number of visits' do
+      expect(link.visits_total).to eq(2)
+    end
+  end
+
+  describe '#visits_by_day' do
+    let(:link) { described_class.create!(url: long_url) }
+
+    before do
+      5.times { link.link_visits.create!(created_at: '2018-01-05') }
+      2.times { link.link_visits.create!(created_at: '2018-01-01') }
+      3.times { link.link_visits.create!(created_at: '2018-01-03') }
+    end
+
+    it 'returns a histogram of visits by day' do
+      expect(link.visits_by_day).to eq(Time.utc(2018, 1, 1) => 2,
+                                       Time.utc(2018, 1, 3) => 3,
+                                       Time.utc(2018, 1, 5) => 5)
     end
   end
 end

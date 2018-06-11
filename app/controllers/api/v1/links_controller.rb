@@ -6,6 +6,8 @@ module Api
       before_action :find_link, only: :show
 
       def show
+        response = { data: link_data }
+        response[:meta] = @link.serialize_visit_stats if params[:stats].present?
         render json: { data: link_data }, status: :ok
       end
 

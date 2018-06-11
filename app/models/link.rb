@@ -2,6 +2,7 @@
 
 class Link < ApplicationRecord
   CHARACTERS_ALLOWED_IN_SLUG = /^[0-9a-zA-Z\-_]*$/
+  TRUNCATE_DAY_SQL = "DATE_TRUNC('day', created_at)"
 
   has_many :link_visits, dependent: :destroy
 
@@ -13,6 +14,21 @@ class Link < ApplicationRecord
 
   def record_visit
     link_visits.create!
+  end
+
+  def serialize_visit_stats
+    {}.tap do |hash|
+      hash[:total_visits] = @link.visits_total
+      hash[:visits_bay_day] = @link.visits_by_day
+    end
+  end
+
+  def visits_total
+    link_visits.count
+  end
+
+  def visits_by_day
+    link_visits.group(TRUNCATE_DAY_SQL).order(TRUNCATE_DAY_SQL).count('link_id')
   end
 
   private
