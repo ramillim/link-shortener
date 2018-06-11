@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class Link < ApplicationRecord
   CHARACTERS_ALLOWED_IN_SLUG = /^[0-9a-zA-Z\-_]*$/
 
-  has_many :link_visits
+  has_many :link_visits, dependent: :destroy
 
   before_validation :set_random_slug, if: proc { |link| link.slug.nil? }
 

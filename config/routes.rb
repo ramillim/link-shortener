@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  namespace :api do
+  namespace :api, defaults: { format: :json } do
     namespace :v1 do
-      resource :links, only: :create
+      resources :links, param: :slug, only: [:create, :show]
     end
   end
 end

@@ -1,6 +1,14 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class LinksController < ApplicationController
+      before_action :find_link, only: :show
+
+      def show
+        render json: { data: link_data }, status: :ok
+      end
+
       def create
         @link = Link.new(link_params)
 
@@ -22,6 +30,12 @@ module Api
           hash[:short_url] = request.base_url + "/#{@link.slug}"
           hash[:url] = @link.url
         end
+      end
+
+      def find_link
+        @link = Link.find_by!(slug: params[:slug])
+      rescue ActiveRecord::RecordNotFound
+        render json: { errors: 'No record found that matches the given slug' }, status: :not_found
       end
     end
   end
