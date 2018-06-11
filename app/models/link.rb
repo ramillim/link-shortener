@@ -18,8 +18,8 @@ class Link < ApplicationRecord
 
   def serialize_visit_stats
     {}.tap do |hash|
-      hash[:total_visits] = @link.visits_total
-      hash[:visits_bay_day] = @link.visits_by_day
+      hash[:total_visits] = visits_total
+      hash[:visits_by_day] = visits_by_day.map { |date, count| { date.iso8601 => count } }
     end
   end
 

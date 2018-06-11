@@ -26,12 +26,29 @@ RSpec.describe Api::V1::LinksController, type: :request do
         it 'the original url' do
           expect(json_response[:data][:url]).to eq(long_url)
         end
+      end
 
-        xit 'the number of times the link has been visited total' do
+      context 'when the stats parameter is provided' do
+        before do
+          2.times { short_link.link_visits.create!(created_at: '2018-01-01') }
+          short_link.link_visits.create!(created_at: '2018-01-03')
+
+          get "/api/v1/links/#{short_link.slug}?stats=true", as: :json
         end
 
-        xit 'a histogram of the number of visits per day' do
+        it 'includes the number of times the link has been visited total' do
+          expect(json_response[:meta][:total_visits]).to eq(3)
         end
+
+        it 'includes a histogram of the number of visits per day' do
+          expect(json_response[:meta][:visits_by_day]).to eq(
+            [
+              { '2018-01-01T00:00:00Z': 2 },
+              { '2018-01-03T00:00:00Z': 1 },
+            ]
+          )
+        end
+
       end
     end
 

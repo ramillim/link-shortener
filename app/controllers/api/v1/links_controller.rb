@@ -8,7 +8,7 @@ module Api
       def show
         response = { data: link_data }
         response[:meta] = @link.serialize_visit_stats if params[:stats].present?
-        render json: { data: link_data }, status: :ok
+        render json: response, status: :ok
       end
 
       def create
