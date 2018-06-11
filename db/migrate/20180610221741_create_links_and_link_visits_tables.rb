@@ -11,7 +11,7 @@ class CreateLinksAndLinkVisitsTables < ActiveRecord::Migration[5.2]
     add_index :links, :url, unique: true
 
     create_table :link_visits do |t|
-      t.references :links, foreign_key: true
+      t.references :link, foreign_key: true
 
       t.timestamps
     end

@@ -16,11 +16,11 @@ ActiveRecord::Schema.define(version: 2018_06_10_221741) do
   enable_extension "plpgsql"
 
   create_table "link_visits", force: :cascade do |t|
-    t.bigint "links_id"
+    t.bigint "link_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_link_visits_on_created_at"
-    t.index ["links_id"], name: "index_link_visits_on_links_id"
+    t.index ["link_id"], name: "index_link_visits_on_link_id"
   end
 
   create_table "links", force: :cascade do |t|
@@ -32,5 +32,5 @@ ActiveRecord::Schema.define(version: 2018_06_10_221741) do
     t.index ["url"], name: "index_links_on_url", unique: true
   end
 
-  add_foreign_key "link_visits", "links", column: "links_id"
+  add_foreign_key "link_visits", "links"
 end
