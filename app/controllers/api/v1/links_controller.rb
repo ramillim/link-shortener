@@ -3,7 +3,7 @@
 module Api
   module V1
     class LinksController < ApiController
-      before_action :find_link, only: :show
+      before_action :find_link_by_slug, only: :show
 
       def show
         response = { data: link_data }
@@ -12,6 +12,14 @@ module Api
       end
 
       def create
+        @link = Link.find_by(url: link_params[:url])
+
+        unless @link.nil?
+          message = "A short link for the url already exists at: #{short_url}"
+          render json: { errors: [message] }, status: :conflict
+          return
+        end
+
         @link = Link.new(link_params)
 
         if @link.save
@@ -29,12 +37,18 @@ module Api
 
       def link_data
         {}.tap do |hash|
-          hash[:short_url] = request.base_url + "/#{@link.slug}"
+          hash[:created_at] = @link.created_at.iso8601
+          hash[:short_url] = short_url
           hash[:url] = @link.url
         end
       end
 
-      def find_link
+      def short_url
+        request.base_url + "/#{@link.slug}"
+      end
+
+
+      def find_link_by_slug
         @link = Link.find_by!(slug: params[:slug])
       rescue ActiveRecord::RecordNotFound
         render json: { errors: 'No record found that matches the given slug' }, status: :not_found

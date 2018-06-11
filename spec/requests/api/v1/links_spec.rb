@@ -26,6 +26,10 @@ RSpec.describe Api::V1::LinksController, type: :request do
         it 'the original url' do
           expect(json_response[:data][:url]).to eq(long_url)
         end
+
+        it 'the created_at timestamp in ISO 8601 format' do
+          expect(json_response[:data][:created_at]).to eq(short_link.created_at.iso8601)
+        end
       end
 
       context 'when the stats parameter is provided' do
@@ -161,9 +165,15 @@ RSpec.describe Api::V1::LinksController, type: :request do
         post api_v1_links_path, params: params, as: :json
       end
 
-      it 'responds with a bad_request' do
-        expect(response).to have_http_status(:bad_request)
-        expect(json_response[:errors]).to include('Url has already been taken')
+      it 'responds with a 409 conflict' do
+        expect(response).to have_http_status(:conflict)
+      end
+
+      it 'responds with the existing short link' do
+        short_url = "http://www.example.com/#{Link.first.slug}"
+
+        expect(json_response[:errors])
+          .to include("A short link for the url already exists at: #{short_url}")
       end
     end
   end
