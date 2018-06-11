@@ -11,6 +11,10 @@ class Link < ApplicationRecord
   validates :url, presence: true, uniqueness: true
   validate :slug_is_url_safe
 
+  def record_visit
+    link_visits.create!
+  end
+
   private
 
   def set_random_slug
