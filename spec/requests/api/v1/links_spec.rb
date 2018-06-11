@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::LinksController, type: :request do
   let(:long_url) { 'https://long.url.com/shorten/me?something=1&anotherParam=42' }
 
-  describe 'GET /api/v1/links' do
+  describe 'GET /api/v1/links/:slug' do
     let!(:short_link) { Link.create!(url: long_url) }
 
     context 'when an existing resource is requested' do
